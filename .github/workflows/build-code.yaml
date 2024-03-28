@@ -45,7 +45,7 @@ jobs:
 
       - name: Add SDK to package
         run: |
-            dotnet nuget add source --username AleksandarStefanovski --password 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 --store-password-in-clear-text --name WeatherApiSource "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
+            dotnet nuget add source --username AleksandarStefanovski --password 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 --store-password-in-clear-text --name WeatherApiSource "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
 
       - name: Pack SDK
         run: |
@@ -53,4 +53,4 @@ jobs:
             dotnet pack --configuration Release 
       
       - name: Publish SDK to NuGet
-        run: dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk/src/WeatherApi.Client/bin/Release/*.nupkg" --api-key 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 --source https://nuget.pkg.github.com/AleksandarStefanovski/index.json
+        run: dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk/src/WeatherApi.Client/bin/Release/*.nupkg" --api-key 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 --source https://nuget.pkg.github.com/AleksandarStefanovski/index.json
