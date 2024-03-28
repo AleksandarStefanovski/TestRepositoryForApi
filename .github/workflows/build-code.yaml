@@ -28,11 +28,14 @@ jobs:
       - name: Install Swashbuckle CLI
         run: dotnet tool install --global Swashbuckle.AspNetCore.Cli
 
+      - name: Install openapi-generator-cli
+        run: npm install @openapitools/openapi-generator-cli -g
+
       - name: Generate Swagger file
         run: swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "WeatherApi/bin/Debug/net8.0/WeatherApi.dll" v1
       
       - name: Generate SDK client solution
-        run: dotnet openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="WeatherApi.Client"
+        run: openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="WeatherApi.Client"
       
       - name: Restore SDK
         run: dotnet restore "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk"
