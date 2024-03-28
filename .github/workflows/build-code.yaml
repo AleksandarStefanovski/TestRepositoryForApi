@@ -17,3 +17,34 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+    
+      - name: Build solution
+        run: dotnet build ${DOTNET_SOLUTION}
+      - name: Create temporary directory
+        id: temp_dir
+        run: echo "::set-output name=dir::$(mktemp -d)"
+      
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli
+
+      - name: Generate Swagger file
+        run: swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "WeatherApi/bin/Debug/net8.0/PersonService.Queries.Api.dll" v1
+      
+      - name: Generate SDK client solution
+        run: openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="WeatherApi.Client"
+      
+      - name: Restore SDK
+        run: dotnet restore "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk"
+        
+      - name: Build SDK
+        run: dotnet build "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk"
+
+      - name: Add SDK to package
+        run: |
+            dotnet nuget add source --username AleksandarStefanovski --password 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 --store-password-in-clear-text --name WeatherApiSource "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
+
+      - name: Pack SDK
+        run: dotnet pack --configuration Release
+      
+      - name: Publish SDK to NuGet
+        run: dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/bin/Release/*.nupkg" --api-key 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 --source https://nuget.pkg.github.com/AleksandarStefanovski/index.json
