@@ -49,9 +49,7 @@ jobs:
 
       - name: Pack SDK
         run: |
-            ls
             cd "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk"
-            ls
             dotnet pack --configuration Release 
       
       - name: Publish SDK to NuGet
