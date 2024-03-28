@@ -20,15 +20,16 @@ jobs:
     
       - name: Build solution
         run: dotnet build ${DOTNET_SOLUTION}
+
+      - name: Install Swashbuckle Swagger
+        run: dotnet tool install Swashbuckle.AspNetCore.Swagger
+
       - name: Create temporary directory
         id: temp_dir
         run: echo "::set-output name=dir::$(mktemp -d)"
       
       - name: Install Swashbuckle CLI
         run: dotnet tool install --global Swashbuckle.AspNetCore.Cli
-
-      - name: Install Swashbuckle Swagger
-        run: dotnet tool install Swashbuckle.AspNetCore.Swagger
 
       - name: Generate Swagger file
         run: swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "WeatherApi/bin/Debug/net8.0/WeatherApi.dll" v1
