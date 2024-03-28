@@ -28,7 +28,7 @@ jobs:
         run: dotnet tool install --global Swashbuckle.AspNetCore.Cli
 
       - name: Install Swashbuckle Swagger
-        run: dotnet tool install --global Swashbuckle.AspNetCore.Swagger --version 6.5.0
+        run: dotnet tool install Swashbuckle.AspNetCore.Swagger
 
       - name: Generate Swagger file
         run: swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "WeatherApi/bin/Debug/net8.0/WeatherApi.dll" v1
