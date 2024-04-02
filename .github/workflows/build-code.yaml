@@ -5,7 +5,7 @@ on:
     branches: [main] 
   
 env:
-  DOTNET_SOLUTIONS: WeatherApi/WeatherApi.sln
+  DOTNET_SOLUTIONS: WeatherApi.sln
 
 jobs:
   test:
