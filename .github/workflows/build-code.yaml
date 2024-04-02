@@ -5,14 +5,17 @@ on:
     branches: [main] 
   
 env:
-  DOTNET_SOLUTION: WeatherApi/WeatherApi.sln
+  DOTNET_SOLUTIONS: |
+     - WeatherApi/WeatherApi.sln
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy: 
+      matrix:
+        project: ${{env.DOTNET_SOLUTIONS}}
     steps:      
       - uses: actions/checkout@v4
-        
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
@@ -35,7 +38,7 @@ jobs:
         run: swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "WeatherApi/bin/Debug/net8.0/WeatherApi.dll" v1
       
       - name: Generate SDK client solution
-        run: openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="WeatherApi.Client"
+        run: openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="WeatherApi.Client" --aditional-properties version=${{version}}
       
       - name: Restore SDK
         run: dotnet restore "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk"
