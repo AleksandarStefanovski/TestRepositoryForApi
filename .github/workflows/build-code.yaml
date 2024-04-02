@@ -4,15 +4,13 @@ on:
   push:
     branches: [main] 
   
-env:
-  DOTNET_SOLUTION: WeatherApi/WeatherApi.sln
-
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy: 
       matrix:
-        project: ${{env.DOTNET_SOLUTION}}
+        project: 
+         - WeatherApi/WeatherApi.sln
     steps:      
       - uses: actions/checkout@v4
       - name: Setup dotnet
