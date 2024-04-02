@@ -3,7 +3,10 @@ name: Build
 on:
   push:
     branches: [main] 
-  
+
+env:
+  DOTNET_SOLUTION: WeatherApi/WeatherApi.sln
+
 jobs:
   test:
     runs-on: ubuntu-latest
