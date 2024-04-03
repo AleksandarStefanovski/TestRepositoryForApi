@@ -3,8 +3,7 @@ on:
   push:
     branches: [main]
 env:
-  WEATHER_API: "WeatherApi/WeatherApi.csproj"
-  ANOTHER_API: "AnotherApi/AnotherApi.csproj"
+
   BASE_VERSION: "1.0"
 jobs:
   install_tools:
@@ -29,8 +28,8 @@ jobs:
     strategy:
       matrix:
         project: 
-          - projectFile: ${{ env.WEATHER_API }}
-          - projectFile: ${{ env.ANOTHER_API }}
+          - projectFile: WeatherApi/WeatherApi.csproj
+          - projectFile: AnotherApi/AnotherApi.csproj
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet
