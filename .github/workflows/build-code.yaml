@@ -6,22 +6,6 @@ env:
 
   BASE_VERSION: "1.0"
 jobs:
-  install_tools:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-
-      - name: Install openapi tools
-        run: |
-          dotnet tool install --global Swashbuckle.AspNetCore.Cli
-          npm install @openapitools/openapi-generator-cli -g
-
   generate_sdks:
     runs-on: ubuntu-latest
     needs: [install_tools]
@@ -40,6 +24,11 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
+      
+      - name: Install openapi tools
+        run: |
+          dotnet tool install --global Swashbuckle.AspNetCore.Cli
+          npm install @openapitools/openapi-generator-cli -g
 
       - name: Build solution
         run: dotnet build ${{ matrix.project.projectFile }}
