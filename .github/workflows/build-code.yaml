@@ -28,8 +28,12 @@ jobs:
     strategy:
       matrix:
         project: 
-          - projectFile: WeatherApi/WeatherApi.csproj
-          - projectFile: AnotherApi/AnotherApi.csproj
+          - projectFile: WeatherApi/WeatherApi.sln
+          - projectFileDll: WeatherApi/bin/Debug/net8.0/WeatherApi.dll
+          - projectName: "WeatherApi.Client"
+          - projectFile: AnotherApi/AnotherApi.sln
+          - projectFileDll: AnotherApi/bin/Debug/net8.0/AnotherApi.dll
+          - projectName: "AnotherApi.Client"
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet
@@ -38,7 +42,7 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Build solution
-        run: dotnet build ${{ matrix.project }}
+        run: dotnet build ${{ matrix.project.projectFile }}
 
       - name: Create temporary directory
         id: temp_dir
@@ -46,14 +50,14 @@ jobs:
 
       - name: Client sdk generating
         run: |
-          swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "${{ matrix.project }}" ${{env.BASE_VERSION}}
-          openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="${{ matrix.project }}.Client --additional-properties packageVersion=${{env.BASE_VERSION}}"
-          dotnet restore "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk"
-          dotnet build "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk"
+          swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "${{ matrix.project.projectFileDll }}" ${{env.BASE_VERSION}}
+          openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="${{ matrix.project.projectName }} --additional-properties packageVersion=${{env.BASE_VERSION}}"
+          dotnet restore "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk"
+          dotnet build "${{ steps.temp_dir.outputs.dir }}/${{ matrix.projectName }}.Sdk"
 
       - name: Publish SDK to NuGet
         run: |
           dotnet nuget add source --username AleksandarStefanovski --password ${{ secrets.ApiKey }} --store-password-in-clear-text --name WeatherApiSource "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
-          cd "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk"
+          cd "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk"
           dotnet pack --configuration Release
-          dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk/src/${{ matrix.project }}/Client/bin/Release/*.nupkg" --api-key ${{ secrets.ApiKey }} --source ${{ matrix.project.publish-tag }}
+          dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}Sdk/src/${{ matrix.project.projectName }}/bin/Release/*.nupkg" --api-key ${{ secrets.ApiKey }} --source ${{ env.BASE_VERSION }}
