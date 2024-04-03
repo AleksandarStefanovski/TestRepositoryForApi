@@ -1,59 +1,58 @@
 name: Build
-
 on:
   push:
-    branches: [main] 
-
+    branches: [main]
 env:
-  DOTNET_SOLUTION: WeatherApi/WeatherApi.sln
-
+  DOTNET_SOLUTIONS: |
+    - WeatherApi/WeatherApi.sln
+  BASE_VERSION: "1.0"
 jobs:
-  test:
+  install_tools:
     runs-on: ubuntu-latest
-    strategy: 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install openapi tools
+        run: |
+          dotnet tool install --global Swashbuckle.AspNetCore.Cli
+          npm install @openapitools/openapi-generator-cli -g
+
+  generate_sdks:
+    runs-on: ubuntu-latest
+    needs: [install_tools]
+    strategy:
       matrix:
-        project: 
-         - WeatherApi/WeatherApi.sln
-    steps:      
+        project: ${{ env.DOTNET_SOLUTIONS }}
+    steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
-    
+          dotnet-version: "8.0.x"
+
       - name: Build solution
-        run: dotnet build ${DOTNET_SOLUTION}
+        run: dotnet build ${{ matrix.project }}
 
       - name: Create temporary directory
         id: temp_dir
         run: echo "::set-output name=dir::$(mktemp -d)"
-      
-      - name: Install Swashbuckle CLI
-        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli
 
-      - name: Install openapi-generator-cli
-        run: npm install @openapitools/openapi-generator-cli -g
-
-      - name: Generate Swagger file
-        run: swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "WeatherApi/bin/Debug/net8.0/WeatherApi.dll" v1
-      
-      - name: Generate SDK client solution
-        run: openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="WeatherApi.Client"
-      
-      - name: Restore SDK
-        run: dotnet restore "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk"
-        
-      - name: Build SDK
-        run: dotnet build "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk"
-
-      - name: Add SDK to package
+      - name: Client sdk generating
         run: |
-            dotnet nuget add source --username AleksandarStefanovski --password ${{ secrets.ApiKey }} --store-password-in-clear-text --name WeatherApiSource "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
+          swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "${{ matrix.project }}" ${{env.BASE_VERSION}}
+          openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="${{ matrix.project }}.Client --additional-properties packageVersion=${{env.BASE_VERSION}}"
+          dotnet restore "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk"
+          dotnet build "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk"
 
-      - name: Pack SDK
-        run: |
-            cd "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk"
-            dotnet pack --configuration Release 
-      
       - name: Publish SDK to NuGet
-        run: dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/WeatherApi.Client.Sdk/src/WeatherApi.Client/bin/Release/*.nupkg" --api-key ${{ secrets.ApiKey }} --source https://nuget.pkg.github.com/AleksandarStefanovski/index.json
+        run: |
+          dotnet nuget add source --username AleksandarStefanovski --password ${{ secrets.ApiKey }} --store-password-in-clear-text --name WeatherApiSource "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
+          cd "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk"
+          dotnet pack --configuration Release
+          dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project }}/Client.Sdk/src/${{ matrix.project }}/Client/bin/Release/*.nupkg" --api-key ${{ secrets.ApiKey }} --source ${{ matrix.project.publish-tag }}
