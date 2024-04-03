@@ -42,9 +42,7 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Build solution
-        run: |
-         echo "Building ${{ matrix.project.projectFile }}"
-         dotnet build ${{ matrix.project.projectFile }}
+        run: dotnet build ${{ matrix.project.projectFile }}
 
       - name: Create temporary directory
         id: temp_dir
