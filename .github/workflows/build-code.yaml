@@ -11,10 +11,10 @@ jobs:
     strategy:
       matrix:
         project: 
-          - projectFile: WeatherApi/WeatherApi.sln
+          - projectFile: WeatherApi/
             projectFileDll: WeatherApi/bin/Debug/net8.0/WeatherApi.dll
             projectName: "WeatherApi.Client"
-          - projectFile: AnotherApi/AnotherApi.sln
+          - projectFile: AnotherApi/
             projectFileDll: AnotherApi/bin/Debug/net8.0/AnotherApi.dll
             projectName: "AnotherApi.Client"
     steps:
