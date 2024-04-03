@@ -38,8 +38,8 @@ jobs:
 
       - name: Client sdk generating
         run: |
-          swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "${{ matrix.project.projectFileDll }}" v1
-          openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="${{ matrix.project.projectName }} --additional-properties packageVersion=2.0.0"
+          swagger tofile --output "${{ steps.temp_dir.outputs.dir }}/swagger.json" "${{ matrix.project.projectFileDll }}" v${{ env.BASE_VERSION }}.${{ github.run_number }}
+          openapi-generator-cli generate -i "${{ steps.temp_dir.outputs.dir }}/swagger.json" -g csharp -o "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk" --additional-properties targetFramework=net8.0 --additional-properties packageName="${{ matrix.project.projectName }} --additional-properties packageVersion=${{ env.BASE_VERSION }}.${{ github.run_number }}"
           dotnet restore "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk"
           dotnet build "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk"
 
