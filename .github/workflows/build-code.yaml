@@ -47,5 +47,8 @@ jobs:
         run: |
           dotnet nuget add source --username AleksandarStefanovski --password ${{ secrets.ApiKey }} --store-password-in-clear-text --name WeatherApiSource "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
           cd "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk"
+        
+      - name: Deploy SDK
+        run: | 
           dotnet pack --configuration Release
           dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}Sdk/src/${{ matrix.project.projectName }}/bin/Release/*.nupkg" --api-key ${{ secrets.ApiKey }} --source "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
