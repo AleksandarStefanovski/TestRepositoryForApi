@@ -8,7 +8,6 @@ env:
 jobs:
   generate_sdks:
     runs-on: ubuntu-latest
-    needs: [install_tools]
     strategy:
       matrix:
         project: 
