@@ -27,7 +27,7 @@ jobs:
     needs: [install_tools]
     strategy:
       matrix:
-        project: ${{ env.DOTNET_SOLUTIONS }}
+        project: ${{env.DOTNET_SOLUTIONS}}
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet
