@@ -51,4 +51,4 @@ jobs:
         run: | 
           cd "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk"
           dotnet pack --configuration Release
-          dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}Sdk/src/${{ matrix.project.projectName }}/bin/Release/*.nupkg" --api-key ${{ secrets.ApiKey }} --source "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
+          dotnet nuget push "${{ steps.temp_dir.outputs.dir }}/${{ matrix.project.projectName }}.Sdk/src/${{ matrix.project.projectName }}/bin/Release/*.nupkg" --api-key ${{ secrets.ApiKey }} --source "https://nuget.pkg.github.com/AleksandarStefanovski/index.json"
