@@ -29,11 +29,11 @@ jobs:
       matrix:
         project: 
           - projectFile: WeatherApi/WeatherApi.sln
-          - projectFileDll: WeatherApi/bin/Debug/net8.0/WeatherApi.dll
-          - projectName: "WeatherApi.Client"
+            projectFileDll: WeatherApi/bin/Debug/net8.0/WeatherApi.dll
+            projectName: "WeatherApi.Client"
           - projectFile: AnotherApi/AnotherApi.sln
-          - projectFileDll: AnotherApi/bin/Debug/net8.0/AnotherApi.dll
-          - projectName: "AnotherApi.Client"
+            projectFileDll: AnotherApi/bin/Debug/net8.0/AnotherApi.dll
+            projectName: "AnotherApi.Client"
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet
