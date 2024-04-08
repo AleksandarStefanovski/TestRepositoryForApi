@@ -34,7 +34,7 @@ jobs:
 
       - name: Create temporary directory
         id: temp_dir
-        run: echo "::set-output name=dir::$(mktemp -d)"
+        run: echo "TEMP_DIR=$(mktemp -d)" >> $GITHUB_ENV
 
       - name: Client sdk generating
         run: |
