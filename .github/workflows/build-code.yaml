@@ -34,7 +34,7 @@ jobs:
 
       - name: Create temporary directory
         id: temp_dir
-        run: echo "dir=$(mktemp -d)" >>$TEMP_DIR
+        run: echo "dir=$(mktemp -d)"
 
       - name: Client sdk generating
         run: |
