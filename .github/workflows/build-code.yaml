@@ -28,7 +28,7 @@ jobs:
         run: |
           dotnet tool install --global Swashbuckle.AspNetCore.Cli
           npm install @openapitools/openapi-generator-cli -g
-          l
+          
       - name: Build solution
         run: dotnet build ${{ matrix.project.projectFile }}
 
