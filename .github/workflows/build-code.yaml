@@ -14,10 +14,10 @@ jobs:
       matrix:
         project: 
           - projectFile: WeatherApi/
-            projectFileDll: WeatherApi/bin/Debug/net8.0/WeatherApi.dll
+            projectFileDll: WeatherApi/bin/Release/net8.0/WeatherApi.dll
             projectName: "WeatherApi.Client"
           - projectFile: AnotherApi/
-            projectFileDll: AnotherApi/bin/Debug/net8.0/AnotherApi.dll
+            projectFileDll: AnotherApi/bin/Release/net8.0/AnotherApi.dll
             projectName: "AnotherApi.Client"
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,9 @@ jobs:
           npm install @openapitools/openapi-generator-cli -g
           
       - name: Build solution
-        run: dotnet build ${{ matrix.project.projectFile }}
+        run: |
+            dotnet publish ${{ matrix.project.projectFile }}
+            dotnet build ${{ matrix.project.projectFile }}
 
       - name: Create temporary directory
         id: temp_dir
