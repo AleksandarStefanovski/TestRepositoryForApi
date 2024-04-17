@@ -33,8 +33,7 @@ jobs:
           
       - name: Build solution
         run: |
-            dotnet publish ${{ matrix.project.projectFile }}
-            dotnet build ${{ matrix.project.projectFile }}
+            dotnet build ${{ matrix.project.projectFile }} --configuration Release
 
       - name: Create temporary directory
         id: temp_dir
