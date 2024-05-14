@@ -28,7 +28,6 @@ jobs:
       
       - name: Install openapi tools
         run: |
-          dotnet tool install --global Swashbuckle.AspNetCore.Cli
           npm install @openapitools/openapi-generator-cli -g
           
       - name: Build solution
